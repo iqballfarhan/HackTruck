@@ -6,6 +6,7 @@ import axios from 'axios';
 import reactLogo from '../src/assets/react.svg';
 // Import actions from authSlice
 import { updateUser } from '../store/slices/authSlice';
+import api from '../store/api';
 
 // Defining the component directly as a named export
 export default function Profile() {
@@ -78,16 +79,7 @@ export default function Profile() {
     
     try {
       // Make API call to update profile
-      const token = localStorage.getItem('token');
-      const response = await axios.post(
-        'http://localhost:3000/api/auth/profile/update',
-        profileForm,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const response = await api.post('/api/auth/profile/update', profileForm);
       
       // Update user in Redux state
       dispatch(updateUser(response.data));
@@ -121,19 +113,10 @@ export default function Profile() {
     
     try {
       // Make API call to change password
-      const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:3000/api/auth/change-password',
-        {
-          currentPassword: passwordForm.currentPassword,
-          newPassword: passwordForm.newPassword
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      await api.post('/api/auth/change-password', {
+        currentPassword: passwordForm.currentPassword,
+        newPassword: passwordForm.newPassword
+      });
       
       setPasswordSuccess('Password changed successfully!');
       

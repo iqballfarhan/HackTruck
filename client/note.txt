@@ -1,0 +1,25 @@
+hactruck-client/
+├── components/
+│   ├── Navbar.js
+│   ├── PostCard.js
+│   ├── PostForm.js
+│   └── Map.js
+├── pages/
+│   ├── Home.js
+│   ├── Login.js
+│   ├── Register.js
+│   └── DriverDashboard.js
+├── store/
+│   ├── slices/
+│   │   ├── authSlice.js
+│   │   └── postSlice.js
+│   └── store.js
+├── App.js
+├── index.js
+├── package.json
+└── vite.config.js
+
+npm init -y
+npm install react react-dom react-router-dom react-redux @reduxjs/toolkit bootstrap axios @react-google-maps/api @react-oauth/google
+npm install --save-dev vite @vitejs/plugin-react
+npm create vite@latest

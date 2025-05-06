@@ -3,19 +3,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createPost } from '../store/slices/postSlice';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { useJsApiLoader, GoogleMap, Marker, DirectionsRenderer } from '@react-google-maps/api';
 import { useNavigate } from 'react-router-dom';
 
-const PostForm = () => {
+const PostForm = ({ onMapGenerated }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector(state => state.posts);
-  
-  // Google Maps API loader
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "",
-    libraries: ['places'],
-  });
   
   const [formData, setFormData] = useState({
     departureDate: '',
@@ -30,19 +23,10 @@ const PostForm = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
-  const [showMap, setShowMap] = useState(false);
-  const [directionsResponse, setDirectionsResponse] = useState(null);
   const [mapError, setMapError] = useState(null);
   const [mapLoading, setMapLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
   
-  // Map container style
-  const mapContainerStyle = {
-    width: '100%',
-    height: '300px',
-    borderRadius: '8px',
-    marginBottom: '15px'
-  };
-
   // Function to automatically generate embed URL from origin and destination
   const generateMapEmbed = async () => {
     if (!formData.origin || !formData.destination) {
@@ -60,18 +44,8 @@ const PostForm = () => {
       const embedUrl = `https://www.google.com/maps/embed/v1/directions?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}&origin=${origin}&destination=${destination}&mode=driving`;
       
       setFormData({ ...formData, mapEmbedUrl: embedUrl });
-      setShowMap(true);
-      
-      // Also calculate directions for the interactive map
-      if (isLoaded && window.google) {
-        const directionsService = new window.google.maps.DirectionsService();
-        const results = await directionsService.route({
-          origin: formData.origin,
-          destination: formData.destination,
-          travelMode: window.google.maps.TravelMode.DRIVING,
-        });
-        setDirectionsResponse(results);
-      }
+      // notify parent of new embed URL
+      if (onMapGenerated) onMapGenerated(embedUrl);
     } catch (error) {
       console.error('Error generating map:', error);
       setMapError("Failed to generate route. Please check your origin and destination addresses.");
@@ -112,18 +86,8 @@ const PostForm = () => {
           ...prevData,
           mapEmbedUrl: embedUrl
         }));
-        
-        // Also calculate directions for the interactive map if needed
-        if (isLoaded && window.google) {
-          const directionsService = new window.google.maps.DirectionsService();
-          const results = await directionsService.route({
-            origin: formData.origin,
-            destination: formData.destination,
-            travelMode: window.google.maps.TravelMode.DRIVING,
-          });
-          setDirectionsResponse(results);
-          setShowMap(true);
-        }
+        // notify parent of new embed URL on submit auto-generation
+        if (onMapGenerated) onMapGenerated(embedUrl);
         
         setMapLoading(false);
       } catch (error) {
@@ -173,8 +137,7 @@ const PostForm = () => {
           image: null,
         });
         setFormErrors({});
-        setDirectionsResponse(null);
-        setShowMap(false);
+        setMapError(null);
         navigate('/driver/posts');
       } catch (err) {
         console.error('Post creation failed:', err);
@@ -186,8 +149,21 @@ const PostForm = () => {
     const file = e.target.files[0];
     if (file) {
       setFormData({ ...formData, image: file });
+      
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
     }
   };
+
+  // Clean up any created object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
 
   // Function to handle date changes from DatePicker
   const handleDateChange = (date) => {
@@ -293,62 +269,6 @@ const PostForm = () => {
         </button>
       </div>
 
-      {/* Display map error if exists */}
-      {mapError && (
-        <div className="alert alert-warning mb-3">
-          <i className="bi bi-exclamation-triangle-fill me-2"></i>
-          {mapError}
-        </div>
-      )}
-
-      {/* Show interactive map or embedded map preview */}
-      {showMap && (
-        <div className="mb-4">
-          <h6 className="mb-2">
-            <i className="bi bi-map me-2"></i>
-            Route Preview
-          </h6>
-          
-          {isLoaded ? (
-            <div className="map-container">
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={directionsResponse?.routes[0]?.legs[0]?.start_location || { lat: -6.2088, lng: 106.8456 }}
-                zoom={10}
-                options={{
-                  zoomControl: true,
-                  streetViewControl: false,
-                  mapTypeControl: false,
-                  fullscreenControl: true,
-                }}
-              >
-                {directionsResponse ? (
-                  <DirectionsRenderer directions={directionsResponse} />
-                ) : (
-                  <>
-                    {formData.origin && <Marker position={{ lat: -6.2088, lng: 106.8456 }} />}
-                  </>
-                )}
-              </GoogleMap>
-            </div>
-          ) : (
-            <div className="d-flex justify-content-center align-items-center" style={{ height: '200px' }}>
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">Loading map...</span>
-              </div>
-            </div>
-          )}
-
-          {/* Show embed preview if available */}
-          {formData.mapEmbedUrl && (
-            <div className="form-text text-success mb-3">
-              <i className="bi bi-check-circle me-1"></i>
-              Map URL generated successfully!
-            </div>
-          )}
-        </div>
-      )}
-
       <div className="mb-3">
         <label className="form-label">Map Embed URL</label>
         <div className="input-group">
@@ -372,6 +292,8 @@ const PostForm = () => {
           The map URL will be auto-generated when you click "Generate Route Map", or you can paste your own Google Maps embed URL.
         </small>
       </div>
+
+      {/* Map Preview Section has been removed */}
 
       <div className="mb-3">
         <label className="form-label">Truck Type</label>
@@ -432,6 +354,19 @@ const PostForm = () => {
           accept="image/*"
           onChange={handleFileChange}
         />
+        {imagePreview && (
+          <div className="mt-3">
+            <p className="mb-1 text-muted">Image Preview:</p>
+            <div style={{ maxWidth: '100%', maxHeight: '300px', overflow: 'hidden' }}>
+              <img 
+                src={imagePreview} 
+                alt="Upload preview" 
+                className="img-fluid rounded"
+                style={{ maxHeight: '300px', objectFit: 'contain' }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <button type="submit" className="btn btn-primary w-100" disabled={loading}>

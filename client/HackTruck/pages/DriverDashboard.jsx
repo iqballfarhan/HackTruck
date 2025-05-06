@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Navigate, Link } from 'react-router-dom';
 import { checkAuth } from '../store/slices/authSlice';
@@ -7,6 +7,7 @@ import PostForm from '../components/PostForm';
 const DriverDashboard = () => {
   const dispatch = useDispatch();
   const { user, loading, error } = useSelector(state => state.auth);
+  const [mapEmbedUrl, setMapEmbedUrl] = useState('');
 
   useEffect(() => {
     // Temporarily disable checkAuth until the server endpoint is fixed
@@ -71,7 +72,23 @@ const DriverDashboard = () => {
                 </div>
                 
                 <h5 className="mb-3 text-center">Add New Truck Listing</h5>
-                <PostForm />
+                <PostForm onMapGenerated={setMapEmbedUrl} />
+                {mapEmbedUrl && (
+                  <div className="mb-4">
+                    <h6 className="mb-2">
+                      <i className="bi bi-map me-2"></i>Map Preview
+                    </h6>
+                    <iframe
+                      src={mapEmbedUrl}
+                      width="100%"
+                      height="300"
+                      style={{ border: 0, borderRadius: '8px' }}
+                      allowFullScreen=""
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                  </div>
+                )}
               </div>
             </div>
           </div>

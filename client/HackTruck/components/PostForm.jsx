@@ -175,7 +175,7 @@ const PostForm = () => {
         setFormErrors({});
         setDirectionsResponse(null);
         setShowMap(false);
-        navigate('/driver-posts');
+        navigate('/driver/posts');
       } catch (err) {
         console.error('Post creation failed:', err);
       }

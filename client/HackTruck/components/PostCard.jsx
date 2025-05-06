@@ -306,78 +306,119 @@ const PostCard = ({ post, showControls = true }) => {
         
         {isEditing ? (
           <form onSubmit={handleUpdate}>
-            <div className="mb-3">
-              <label className="form-label">Departure Date</label>
-              <DatePicker
-                selected={formData.departureDate ? new Date(formData.departureDate) : null}
-                onChange={handleDateChange}
-                className="form-control"
-                dateFormat="yyyy-MM-dd"
-                placeholderText="Select departure date"
-                minDate={new Date()}
-                required
-              />
+            <h5 className="fw-bold mb-4">Edit Truck Listing</h5>
+            
+            <div className="row">
+              <div className="col-12">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Departure Date</label>
+                  <div className="date-picker-container" style={{display: 'block', width: '100%'}}>
+                    <DatePicker
+                      selected={formData.departureDate ? new Date(formData.departureDate) : null}
+                      onChange={handleDateChange}
+                      className="form-control w-100"
+                      dateFormat="yyyy-MM-dd"
+                      placeholderText="Select departure date"
+                      minDate={new Date()}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Origin</label>
-              <input
-                type="text"
-                className="form-control"
-                name="origin"
-                value={formData.origin}
-                onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                required
-              />
+            
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Origin</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="origin"
+                    value={formData.origin}
+                    onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Destination</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="destination"
+                    value={formData.destination}
+                    onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Destination</label>
-              <input
-                type="text"
-                className="form-control"
-                name="destination"
-                value={formData.destination}
-                onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                required
-              />
+            
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Truck Type</label>
+                  <select
+                    className="form-select"
+                    name="truckType"
+                    value={formData.truckType}
+                    onChange={(e) => setFormData({ ...formData, truckType: e.target.value })}
+                  >
+                    <option value="pickup">Pickup</option>
+                    <option value="box">Box</option>
+                    <option value="flatbed">Flatbed</option>
+                    <option value="refrigerated">Refrigerated</option>
+                  </select>
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Max Weight (kg)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="maxWeight"
+                    value={formData.maxWeight}
+                    onChange={(e) => setFormData({ ...formData, maxWeight: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
             </div>
-            <div className="mb-3">
-              <label className="form-label">Truck Type</label>
-              <select
-                className="form-control"
-                name="truckType"
-                value={formData.truckType}
-                onChange={(e) => setFormData({ ...formData, truckType: e.target.value })}
-              >
-                <option value="pickup">Pickup</option>
-                <option value="box">Box</option>
-                <option value="flatbed">Flatbed</option>
-                <option value="refrigerated">Refrigerated</option>
-              </select>
+            
+            <div className="row">
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Price (Rp)</label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="price"
+                    value={formData.price}
+                    onChange={(e) => setFormData({ ...formData, price: e.target.value === '' ? '' : Number(e.target.value) })}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-semibold">Contact Number</label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
             </div>
+            
             <div className="mb-3">
-              <label className="form-label">Max Weight (kg)</label>
-              <input
-                type="number"
-                className="form-control"
-                name="maxWeight"
-                value={formData.maxWeight}
-                onChange={(e) => setFormData({ ...formData, maxWeight: e.target.value })}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Price (Rp)</label>
-              <input
-                type="number"
-                className="form-control"
-                name="price"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value === '' ? '' : Number(e.target.value) })}
-                required
-              />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Map Embed URL (Google Maps)</label>
+              <label className="form-label fw-semibold">Map Embed URL (Google Maps)</label>
               <input
                 type="text"
                 className="form-control"
@@ -388,32 +429,55 @@ const PostCard = ({ post, showControls = true }) => {
               />
               <small className="text-muted">Get embed URL from Google Maps share option</small>
             </div>
+            
             <div className="mb-3">
-              <label className="form-label">Contact Number</label>
-              <input
-                type="tel"
-                className="form-control"
-                name="phoneNumber"
-                value={formData.phoneNumber}
-                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                required
-              />
+              <label className="form-label fw-semibold">Current Image</label>
+              {post.imageUrl ? (
+                <div className="mb-3">
+                  <img 
+                    src={post.imageUrl} 
+                    alt="Current truck image" 
+                    className="img-fluid rounded border" 
+                    style={{ maxHeight: '200px', objectFit: 'cover', width: '100%' }}
+                  />
+                  <div className="form-text text-muted mt-1">
+                    <i className="bi bi-info-circle me-1"></i> 
+                    Upload new image below to change it
+                  </div>
+                </div>
+              ) : (
+                <div className="alert alert-light text-center py-2">
+                  <i className="bi bi-image me-1"></i> No image uploaded yet
+                </div>
+              )}
             </div>
-            <div className="mb-3">
-              <label className="form-label">Truck Image</label>
+            
+            <div className="mb-4">
+              <label className="form-label fw-semibold">Truck Image</label>
               <input
                 type="file"
                 className="form-control"
                 onChange={(e) => setImage(e.target.files[0])}
               />
+              {image && (
+                <div className="mt-2">
+                  <p className="form-text text-success">
+                    <i className="bi bi-check-circle me-1"></i>
+                    New image selected: {image.name}
+                  </p>
+                </div>
+              )}
             </div>
-            <div className="d-flex justify-content-between mt-4">
+            
+            <hr className="my-4" />
+            
+            <div className="d-flex justify-content-between">
               <button type="submit" className="btn btn-primary">
-                Save Changes
+                <i className="bi bi-save me-1"></i> Save Changes
               </button>
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn-outline-secondary"
                 onClick={() => setIsEditing(false)}
               >
                 Cancel

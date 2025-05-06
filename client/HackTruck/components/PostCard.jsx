@@ -544,12 +544,14 @@ const PostCard = ({ post, showControls = true }) => {
                   <div className="me-2" style={{ width: '30px', textAlign: 'center' }}>
                     📱
                   </div>
-                  <div className="d-flex align-items-center">
+                  <div>
                     <strong>Contact:</strong> {post.phoneNumber}
-                    <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success btn-sm ms-2">
-                      <i className="bi bi-whatsapp me-1"></i>WhatsApp
-                    </a>
                   </div>
+                </div>
+                <div className="mb-2">
+                  <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success btn-sm">
+                    <i className="bi bi-whatsapp me-1"></i>WhatsApp
+                  </a>
                 </div>
               </div>
 

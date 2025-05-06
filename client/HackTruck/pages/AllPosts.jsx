@@ -131,8 +131,8 @@ const AllPosts = () => {
           </div>
         ) : (
           <div className="row">
-            {posts.map(post => (
-              <div key={post.id} className="col-lg-4 col-md-6 mb-4">
+            {posts.map((post) => (
+              <div key={post.id} className="col-md-6 mb-4">
                 <PostCard post={post} showControls={false} />
               </div>
             ))}

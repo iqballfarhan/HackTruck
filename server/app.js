@@ -12,7 +12,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://hacktruck-b0e4d.web.app"], // array of allowed origins
+  origin: ["http://localhost:5173", "http://localhost:4173", "https://hacktruck-b0e4d.web.app"], // array of allowed origins
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

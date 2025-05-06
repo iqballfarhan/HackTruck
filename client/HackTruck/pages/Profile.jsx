@@ -1,11 +1,39 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import axios from 'axios';
 // Import React logo dari assets
 import reactLogo from '../src/assets/react.svg';
+// Import actions from authSlice
+import { updateUser } from '../store/slices/authSlice';
 
-const Profile = () => {
+// Defining the component directly as a named export
+export default function Profile() {
   const { user, loading } = useSelector(state => state.auth);
+  const dispatch = useDispatch();
+  
+  // State for modals
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  
+  // Form states
+  const [profileForm, setProfileForm] = useState({
+    name: user?.name || '',
+    username: user?.username || '',
+    email: user?.email || ''
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  
+  // Error and success states
+  const [profileError, setProfileError] = useState(null);
+  const [profileSuccess, setProfileSuccess] = useState(null);
+  const [passwordError, setPasswordError] = useState(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Redirect ke halaman login jika pengguna belum login
   if (!loading && !user) {
@@ -25,6 +53,107 @@ const Profile = () => {
 
   // Menggunakan logo React SVG sebagai default avatar
   const defaultAvatar = reactLogo;
+  
+  // Handle form input changes
+  const handleProfileChange = (e) => {
+    setProfileForm({
+      ...profileForm,
+      [e.target.name]: e.target.value
+    });
+  };
+  
+  const handlePasswordChange = (e) => {
+    setPasswordForm({
+      ...passwordForm,
+      [e.target.name]: e.target.value
+    });
+  };
+  
+  // Handle profile update submission
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setProfileError(null);
+    setProfileSuccess(null);
+    setIsSubmitting(true);
+    
+    try {
+      // Make API call to update profile
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'http://localhost:3000/api/auth/profile/update',
+        profileForm,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      // Update user in Redux state
+      dispatch(updateUser(response.data));
+      setProfileSuccess('Profile updated successfully!');
+      
+      // Close modal after short delay
+      setTimeout(() => {
+        setShowEditModal(false);
+        setProfileSuccess(null);
+      }, 1500);
+    } catch (error) {
+      setProfileError(error.response?.data?.message || 'Failed to update profile');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  
+  // Handle password change submission
+  const handlePasswordSubmit = async (e) => {
+    e.preventDefault();
+    setPasswordError(null);
+    setPasswordSuccess(null);
+    setIsSubmitting(true);
+    
+    // Validate passwords match
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setPasswordError("New passwords don't match");
+      setIsSubmitting(false);
+      return;
+    }
+    
+    try {
+      // Make API call to change password
+      const token = localStorage.getItem('token');
+      await axios.post(
+        'http://localhost:3000/api/auth/change-password',
+        {
+          currentPassword: passwordForm.currentPassword,
+          newPassword: passwordForm.newPassword
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      setPasswordSuccess('Password changed successfully!');
+      
+      // Reset form and close modal after short delay
+      setPasswordForm({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      
+      setTimeout(() => {
+        setShowPasswordModal(false);
+        setPasswordSuccess(null);
+      }, 1500);
+    } catch (error) {
+      setPasswordError(error.response?.data?.message || 'Failed to change password');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="container py-5">
@@ -74,11 +203,17 @@ const Profile = () => {
                   </div>
                   <h5 className="border-bottom pb-2 mb-3 mt-4">Account Actions</h5>
                   <div className="d-flex gap-2">
-                    <button className="btn btn-outline-primary">
+                    <button 
+                      className="btn btn-outline-primary"
+                      onClick={() => setShowEditModal(true)}
+                    >
                       <i className="bi bi-pencil-square me-2"></i>
                       Edit Profile
                     </button>
-                    <button className="btn btn-outline-danger">
+                    <button 
+                      className="btn btn-outline-danger"
+                      onClick={() => setShowPasswordModal(true)}
+                    >
                       <i className="bi bi-shield-lock me-2"></i>
                       Change Password
                     </button>
@@ -89,8 +224,164 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      
+      {/* Edit Profile Modal */}
+      {showEditModal && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header bg-primary text-white">
+                <h5 className="modal-title">Edit Profile</h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={() => setShowEditModal(false)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form onSubmit={handleProfileSubmit}>
+                <div className="modal-body">
+                  {profileError && (
+                    <div className="alert alert-danger">{profileError}</div>
+                  )}
+                  {profileSuccess && (
+                    <div className="alert alert-success">{profileSuccess}</div>
+                  )}
+                  <div className="mb-3">
+                    <label htmlFor="name" className="form-label">Full Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="name"
+                      name="name"
+                      value={profileForm.name}
+                      onChange={handleProfileChange}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="email" className="form-label">Email</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      id="email"
+                      name="email"
+                      value={profileForm.email}
+                      onChange={handleProfileChange}
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={() => setShowEditModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Updating...
+                      </>
+                    ) : 'Save Changes'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="modal fade show d-block" tabIndex="-1" role="dialog" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <div className="modal-dialog modal-dialog-centered" role="document">
+            <div className="modal-content">
+              <div className="modal-header bg-danger text-white">
+                <h5 className="modal-title">Change Password</h5>
+                <button 
+                  type="button" 
+                  className="btn-close btn-close-white" 
+                  onClick={() => setShowPasswordModal(false)}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <form onSubmit={handlePasswordSubmit}>
+                <div className="modal-body">
+                  {passwordError && (
+                    <div className="alert alert-danger">{passwordError}</div>
+                  )}
+                  {passwordSuccess && (
+                    <div className="alert alert-success">{passwordSuccess}</div>
+                  )}
+                  <div className="mb-3">
+                    <label htmlFor="currentPassword" className="form-label">Current Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="currentPassword"
+                      name="currentPassword"
+                      value={passwordForm.currentPassword}
+                      onChange={handlePasswordChange}
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="newPassword" className="form-label">New Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="newPassword"
+                      name="newPassword"
+                      value={passwordForm.newPassword}
+                      onChange={handlePasswordChange}
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label htmlFor="confirmPassword" className="form-label">Confirm New Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      value={passwordForm.confirmPassword}
+                      onChange={handlePasswordChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button 
+                    type="button" 
+                    className="btn btn-secondary" 
+                    onClick={() => setShowPasswordModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-danger"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Updating...
+                      </>
+                    ) : 'Change Password'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default Profile;
+}

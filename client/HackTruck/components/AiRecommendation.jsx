@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import PostCard from "./PostCard";
 import { useNavigate } from "react-router-dom";
@@ -13,6 +13,7 @@ const AiRecommendation = () => {
   const [extractedFilters, setExtractedFilters] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const componentRef = useRef(null);
 
   // Function to extract key information from user input
   const extractFiltersFromInput = (input) => {
@@ -41,20 +42,41 @@ const AiRecommendation = () => {
     };
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Listen for custom events from other components
+  useEffect(() => {
+    const handleOpenAiAssistant = (event) => {
+      const { query } = event.detail;
+      if (query) {
+        setInput(query);
+        handleSubmitWithQuery(query);
+        
+        // Scroll to the component
+        if (componentRef.current) {
+          componentRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }
+    };
+
+    window.addEventListener('open-ai-assistant', handleOpenAiAssistant);
+    
+    return () => {
+      window.removeEventListener('open-ai-assistant', handleOpenAiAssistant);
+    };
+  }, []);
+
+  const handleSubmitWithQuery = async (query) => {
     setIsLoading(true);
     setRecommendation("Mencari rekomendasi...");
     setPosts([]);
     
     // Extract filters from user input
-    const filters = extractFiltersFromInput(input);
+    const filters = extractFiltersFromInput(query);
     setExtractedFilters(filters);
     
     try {
       const { data } = await axios.post("http://localhost:3000/cargo/recommend", { 
-        query: input,
-        filters: filters // Send extracted filters to backend
+        query,
+        filters // Send extracted filters to backend
       });
       
       setRecommendation(data.recommendation || "Tidak ada rekomendasi tersedia.");
@@ -66,6 +88,11 @@ const AiRecommendation = () => {
       setPosts([]);
       setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    handleSubmitWithQuery(input);
   };
 
   // Apply filters to the main search page
@@ -87,7 +114,7 @@ const AiRecommendation = () => {
   };
 
   return (
-    <div className="card shadow border-0 rounded-lg mb-5">
+    <div className="card shadow border-0 rounded-lg mb-5" ref={componentRef}>
       <div className="card-header bg-white d-flex align-items-center py-3">
         <i className="bi bi-robot me-2 text-primary"></i>
         <h3 className="mb-0">AI Cargo Assistant</h3>

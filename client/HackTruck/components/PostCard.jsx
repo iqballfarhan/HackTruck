@@ -549,9 +549,21 @@ const PostCard = ({ post, showControls = true }) => {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success">
-                    <i className="bi bi-whatsapp me-2"></i>Contact via WhatsApp
-                  </a>
+                  <div className="d-flex flex-wrap gap-2">
+                    <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success">
+                      <i className="bi bi-whatsapp me-2"></i>Contact via WhatsApp
+                    </a>
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => window.dispatchEvent(new CustomEvent('open-ai-assistant', { 
+                        detail: { 
+                          query: `Kirim barang dari ${post.origin} ke ${post.destination}, ${post.maxWeight}kg, truk ${post.truckType}` 
+                        }
+                      }))}
+                    >
+                      <i className="bi bi-robot me-2"></i>AI Cargo Assistant
+                    </button>
+                  </div>
                 </div>
               </div>
 

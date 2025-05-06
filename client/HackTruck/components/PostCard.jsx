@@ -548,22 +548,29 @@ const PostCard = ({ post, showControls = true }) => {
                     <strong>Contact:</strong> {post.phoneNumber}
                   </div>
                 </div>
-                <div className="mb-2">
-                  <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success btn-sm">
-                    <i className="bi bi-whatsapp me-1"></i>WhatsApp
+                <div className="mt-3">
+                  <a href={createWhatsAppLink(post)} target="_blank" rel="noopener noreferrer" className="btn btn-success">
+                    <i className="bi bi-whatsapp me-2"></i>Contact via WhatsApp
                   </a>
                 </div>
               </div>
 
               <div className="col-md-6">
-                {post.imageUrl && (
+                {post.imageUrl ? (
                   <div className="truck-image-container mb-3">
                     <img
                       src={post.imageUrl}
                       alt="Truck"
-                      className="img-fluid rounded"
+                      className="img-fluid rounded shadow-sm"
                       style={{ maxHeight: '200px', width: '100%', objectFit: 'cover' }}
                     />
+                  </div>
+                ) : (
+                  <div className="truck-image-placeholder d-flex justify-content-center align-items-center bg-light rounded mb-3" style={{ height: '200px' }}>
+                    <div className="text-center text-muted">
+                      <i className="bi bi-image" style={{ fontSize: '2rem' }}></i>
+                      <p className="mt-2 mb-0">No image available</p>
+                    </div>
                   </div>
                 )}
               </div>

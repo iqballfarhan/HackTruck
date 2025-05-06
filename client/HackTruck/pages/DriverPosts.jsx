@@ -64,8 +64,8 @@ const DriverPosts = () => {
             ) : (
               <div className="row">
                 {driverPosts.map(post => (
-                  <div key={post.id} className="col-lg-4 col-md-6 mb-4">
-                    <PostCard post={post} />
+                  <div key={post.id} className="col-lg-6 col-md-6 mb-4">
+                    <PostCard post={post} showAIButton={false} />
                   </div>
                 ))}
               </div>

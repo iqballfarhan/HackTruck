@@ -4,6 +4,7 @@ import PostCard from "./PostCard";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchPosts } from "../store/slices/postSlice";
+import api from "../store/api"; // Import instance API yang sudah dibuat
 
 const AiRecommendation = () => {
   const [input, setInput] = useState("");
@@ -74,9 +75,10 @@ const AiRecommendation = () => {
     setExtractedFilters(filters);
     
     try {
-      const { data } = await axios.post("http://localhost:3000/cargo/recommend", { 
+      // Gunakan instance API yang sudah dibuat
+      const { data } = await api.post("/cargo/recommend", { 
         query,
-        filters // Send extracted filters to backend
+        filters
       });
       
       setRecommendation(data.recommendation || "Tidak ada rekomendasi tersedia.");

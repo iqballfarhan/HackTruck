@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HackTruck API Documentation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            padding-top: 60px;
+        }
+        .navbar {
+            background-color: var(--primary-color);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        .navbar-brand .truck-icon {
+            margin-right: 10px;
+            font-size: 1.5em;
+        }
+        .sidebar {
+            position: fixed;
+            top: 56px;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 20px 0;
+            overflow-y: auto;
+            background-color: var(--light-color);
+            border-right: 1px solid #dee2e6;
+        }
+        .sidebar .nav-link {
+            font-weight: 500;
+            color: var(--dark-color);
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin: 0.2rem 0;
+        }
+        .sidebar .nav-link:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .sidebar .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .endpoint {
+            margin-bottom: 30px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            overflow: hidden;
+        }
+        .endpoint-header {
+            display: flex;
+            padding: 10px 15px;
+            align-items: center;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+        }
+        .method {
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin-right: 15px;
+            min-width: 80px;
+            text-align: center;
+        }
+        .get { background-color: #61affe; color: white; }
+        .post { background-color: #49cc90; color: white; }
+        .put { background-color: #fca130; color: white; }
+        .delete { background-color: #f93e3e; color: white; }
+        .endpoint-url {
+            font-family: monospace;
+            font-size: 1.1em;
+            flex-grow: 1;
+        }
+        .endpoint-body {
+            padding: 15px;
+            background-color: white;
+        }
+        .badge-auth {
+            background-color: #e74c3c;
+            color: white;
+            margin-left: 10px;
+            font-size: 0.8em;
+        }
+        .badge-driver {
+            background-color: #f39c12;
+            color: white;
+            margin-left: 5px;
+            font-size: 0.8em;
+        }
+        .tab-content {
+            padding: 15px 0;
+        }
+        pre {
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        .section-title {
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .response-example {
+            margin-top: 15px;
+        }
+        .param-table {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        .required-badge {
+            background-color: #dc3545;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+        .optional-badge {
+            background-color: #6c757d;
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            vertical-align: middle;
+        }
+        .top-alert {
+            border-radius: 0;
+            margin-bottom: 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <span class="truck-icon">🚛</span> HackTruck API Documentation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#overview">Overview</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#authentication">Authentication</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#posts">Posts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#ai">AI Features</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="alert alert-info top-alert" role="alert">
+        Base URL: <code>https://api.iqballfarhan.web.id</code> (Production) | <code>http://localhost:3000</code> (Development)
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar navigation -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar">
+                <div class="position-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#overview">Overview</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#authentication">Authentication</a>
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a class="nav-link" href="#register">Register</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#login">Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#google-login">Google Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#profile-update">Update Profile</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#change-password">Change Password</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#posts">Posts</a>
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a class="nav-link" href="#get-all-posts">Get All Posts</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#get-driver-posts">Get Driver Posts</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#create-post">Create Post</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#update-post">Update Post</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#delete-post">Delete Post</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#ai">AI Features</a>
+                            <ul class="nav flex-column ms-3">
+                                <li class="nav-item"><a class="nav-link" href="#truck-recommendation">Truck Recommendation</a></li>
+                                <li class="nav-item"><a class="nav-link" href="#cargo-recommendation">Cargo Recommendation</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content area -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <section id="overview">
+                    <h1 class="section-title">Overview</h1>
+                    <p>Welcome to the HackTruck API documentation. HackTruck is a platform that connects truck drivers with users who need cargo transportation services. This API provides endpoints for user authentication, post management, and AI-powered recommendations.</p>
+
+                    <h3>Authentication</h3>
+                    <p>Most endpoints require authentication using JWT tokens. To authenticate, include the token in the <code>Authorization</code> header as follows:</p>
+                    <pre><code>Authorization: Bearer &lt;your_token_here&gt;</code></pre>
+
+                    <h3>User Roles</h3>
+                    <p>The API has two user roles:</p>
+                    <ul>
+                        <li><strong>user</strong>: Regular users who can browse posts and get recommendations</li>
+                        <li><strong>driver</strong>: Drivers who can create, update, and delete their own posts</li>
+                    </ul>
+
+                    <h3>Response Format</h3>
+                    <p>All responses are returned in JSON format.</p>
+                </section>
+
+                <section id="authentication">
+                    <h1 class="section-title">Authentication</h1>
+
+                    <div id="register" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/auth/register</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Register a new user</h5>
+                            <p>Create a new user account with email and password authentication.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#register-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#register-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="register-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>email <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's email address</td>
+                                            </tr>
+                                            <tr>
+                                                <td>password <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's password</td>
+                                            </tr>
+                                            <tr>
+                                                <td>role <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User role: "user" or "driver"</td>
+                                            </tr>
+                                            <tr>
+                                                <td>name <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's full name</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "email": "john@example.com",
+  "password": "secret123",
+  "role": "driver",
+  "name": "John Doe"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="register-response">
+                                    <h6>Successful response (201 Created):</h6>
+                                    <pre><code>{
+  "user": {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "email": "john@example.com",
+    "role": "driver",
+    "name": "John Doe"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+
+                                    <h6>Error response (400 Bad Request):</h6>
+                                    <pre><code>{
+  "message": "Email already exists"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="login" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/auth/login</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Login with email and password</h5>
+                            <p>Authenticate a user with email and password to receive a JWT token.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#login-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#login-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="login-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>email <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's email address</td>
+                                            </tr>
+                                            <tr>
+                                                <td>password <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's password</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "email": "john@example.com",
+  "password": "secret123"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="login-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "user": {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "email": "john@example.com",
+    "role": "driver",
+    "name": "John Doe"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+
+                                    <h6>Error response (401 Unauthorized):</h6>
+                                    <pre><code>{
+  "message": "Invalid credentials"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="google-login" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/auth/google</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Login with Google</h5>
+                            <p>Authenticate a user with a Google OAuth2 token.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#google-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#google-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="google-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>token <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Google OAuth token ID</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "token": "google_oauth_token_id_here"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="google-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "user": {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "email": "john@gmail.com",
+    "role": "user",
+    "name": "John Doe"
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
+
+                                    <h6>Error response (401 Unauthorized):</h6>
+                                    <pre><code>{
+  "message": "Invalid Google token"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="profile-update" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/auth/profile/update</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Update user profile</h5>
+                            <p>Update the authenticated user's profile information.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#profile-update-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-update-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="profile-update-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>name <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>User's full name</td>
+                                            </tr>
+                                            <tr>
+                                                <td>email <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>User's email address</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "name": "John Updated Doe",
+  "email": "johndoe@example.com"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="profile-update-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "user": {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "name": "John Updated Doe",
+    "email": "johndoe@example.com",
+    "role": "driver"
+  },
+  "message": "Profile updated successfully"
+}</code></pre>
+
+                                    <h6>Error response (400 Bad Request):</h6>
+                                    <pre><code>{
+  "message": "Email already in use by another account"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="change-password" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/auth/change-password</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Change password</h5>
+                            <p>Change the authenticated user's password.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#change-pw-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#change-pw-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="change-pw-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>currentPassword <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's current password</td>
+                                            </tr>
+                                            <tr>
+                                                <td>newPassword <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's new password</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "currentPassword": "oldSecret123",
+  "newPassword": "newSecret456"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="change-pw-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "message": "Password changed successfully"
+}</code></pre>
+
+                                    <h6>Error response (401 Unauthorized):</h6>
+                                    <pre><code>{
+  "message": "Current password is incorrect"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="posts">
+                    <h1 class="section-title">Posts</h1>
+
+                    <div id="get-all-posts" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <span class="endpoint-url">/api/posts</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Get all posts with filtering and pagination</h5>
+                            <p>Retrieve a list of posts with optional filtering, sorting, and pagination.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#get-posts-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#get-posts-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="get-posts-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>page <span class="optional-badge">Optional</span></td>
+                                                <td>Number</td>
+                                                <td>Page number for pagination (default: 1)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>limit <span class="optional-badge">Optional</span></td>
+                                                <td>Number</td>
+                                                <td>Number of posts per page (default: 10)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>search <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Search term for matching origin or destination</td>
+                                            </tr>
+                                            <tr>
+                                                <td>truckType <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Filter by truck type (e.g., "box", "pickup", "refrigerated")</td>
+                                            </tr>
+                                            <tr>
+                                                <td>sortBy <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Field to sort by (default: "createdAt")</td>
+                                            </tr>
+                                            <tr>
+                                                <td>order <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Sort order: "ASC" or "DESC" (default: "DESC")</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>GET /api/posts?page=1&limit=10&search=Jakarta&truckType=box&sortBy=price&order=ASC</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="get-posts-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "posts": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "departureDate": "2025-05-15",
+      "origin": "Jakarta",
+      "destination": "Surabaya",
+      "truckType": "box",
+      "maxWeight": 1500,
+      "phoneNumber": "08123456789",
+      "price": 2000000,
+      "imageUrl": "https://cloudinary.com/image.jpg",
+      "mapEmbedUrl": "https://maps.example.com/embed/123",
+      "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+      "createdAt": "2025-05-01T12:00:00.000Z",
+      "updatedAt": "2025-05-01T12:00:00.000Z",
+      "User": {
+        "name": "John Driver"
+      }
+    },
+    // More posts...
+  ],
+  "totalPages": 5,
+  "currentPage": 1
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="get-driver-posts" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <span class="endpoint-url">/api/posts/driver</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                            <span class="badge badge-driver">Driver Only</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Get posts by authenticated driver</h5>
+                            <p>Retrieve all posts created by the currently authenticated driver.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#driver-posts-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="driver-posts-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>[
+  {
+    "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+    "departureDate": "2025-05-15",
+    "origin": "Jakarta",
+    "destination": "Surabaya",
+    "truckType": "box",
+    "maxWeight": 1500,
+    "phoneNumber": "08123456789",
+    "price": 2000000,
+    "imageUrl": "https://cloudinary.com/image.jpg",
+    "mapEmbedUrl": "https://maps.example.com/embed/123",
+    "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+    "createdAt": "2025-05-01T12:00:00.000Z",
+    "updatedAt": "2025-05-01T12:00:00.000Z"
+  },
+  // More posts...
+]</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="create-post" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/posts</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                            <span class="badge badge-driver">Driver Only</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Create a new post</h5>
+                            <p>Create a new cargo transportation post.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#create-post-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#create-post-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="create-post-params">
+                                    <p>Content-Type: multipart/form-data</p>
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>departureDate <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Date of departure (YYYY-MM-DD)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>origin <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Origin location</td>
+                                            </tr>
+                                            <tr>
+                                                <td>destination <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Destination location</td>
+                                            </tr>
+                                            <tr>
+                                                <td>truckType <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Type of truck (e.g., "box", "pickup", "refrigerated")</td>
+                                            </tr>
+                                            <tr>
+                                                <td>maxWeight <span class="required-badge">Required</span></td>
+                                                <td>Number</td>
+                                                <td>Maximum weight capacity in kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>phoneNumber <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>Contact phone number</td>
+                                            </tr>
+                                            <tr>
+                                                <td>price <span class="required-badge">Required</span></td>
+                                                <td>Number</td>
+                                                <td>Price in IDR</td>
+                                            </tr>
+                                            <tr>
+                                                <td>mapEmbedUrl <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Google Maps embed URL</td>
+                                            </tr>
+                                            <tr>
+                                                <td>image <span class="optional-badge">Optional</span></td>
+                                                <td>File</td>
+                                                <td>Truck image file</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="create-post-response">
+                                    <h6>Successful response (201 Created):</h6>
+                                    <pre><code>{
+  "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "departureDate": "2025-05-15",
+  "origin": "Jakarta",
+  "destination": "Surabaya",
+  "truckType": "box",
+  "maxWeight": 1500,
+  "phoneNumber": "08123456789",
+  "price": 2000000,
+  "imageUrl": "https://cloudinary.com/image.jpg",
+  "mapEmbedUrl": "https://maps.example.com/embed/123",
+  "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+  "updatedAt": "2025-05-01T12:00:00.000Z",
+  "createdAt": "2025-05-01T12:00:00.000Z"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="update-post" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method put">PUT</span>
+                            <span class="endpoint-url">/api/posts/:id</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                            <span class="badge badge-driver">Driver Only</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Update a post</h5>
+                            <p>Update an existing post owned by the authenticated driver.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#update-post-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#update-post-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="update-post-params">
+                                    <p>Content-Type: multipart/form-data</p>
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>departureDate <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Date of departure (YYYY-MM-DD)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>origin <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Origin location</td>
+                                            </tr>
+                                            <tr>
+                                                <td>destination <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Destination location</td>
+                                            </tr>
+                                            <tr>
+                                                <td>truckType <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Type of truck (e.g., "box", "pickup", "refrigerated")</td>
+                                            </tr>
+                                            <tr>
+                                                <td>maxWeight <span class="optional-badge">Optional</span></td>
+                                                <td>Number</td>
+                                                <td>Maximum weight capacity in kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>phoneNumber <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Contact phone number</td>
+                                            </tr>
+                                            <tr>
+                                                <td>price <span class="optional-badge">Optional</span></td>
+                                                <td>Number</td>
+                                                <td>Price in IDR</td>
+                                            </tr>
+                                            <tr>
+                                                <td>mapEmbedUrl <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Google Maps embed URL</td>
+                                            </tr>
+                                            <tr>
+                                                <td>image <span class="optional-badge">Optional</span></td>
+                                                <td>File</td>
+                                                <td>Truck image file</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane fade" id="update-post-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+  "departureDate": "2025-05-20",
+  "origin": "Jakarta",
+  "destination": "Bandung",
+  "truckType": "box",
+  "maxWeight": 2000,
+  "phoneNumber": "08123456789",
+  "price": 2500000,
+  "imageUrl": "https://cloudinary.com/updated-image.jpg",
+  "mapEmbedUrl": "https://maps.example.com/embed/123",
+  "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+  "createdAt": "2025-05-01T12:00:00.000Z",
+  "updatedAt": "2025-05-02T12:00:00.000Z"
+}</code></pre>
+
+                                    <h6>Error response (404 Not Found):</h6>
+                                    <pre><code>{
+  "message": "Post not found"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="delete-post" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method delete">DELETE</span>
+                            <span class="endpoint-url">/api/posts/:id</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                            <span class="badge badge-driver">Driver Only</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Delete a post</h5>
+                            <p>Delete an existing post owned by the authenticated driver.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#delete-post-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="delete-post-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "message": "Post deleted"
+}</code></pre>
+
+                                    <h6>Error response (404 Not Found):</h6>
+                                    <pre><code>{
+  "message": "Post not found"
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="ai">
+                    <h1 class="section-title">AI Features</h1>
+
+                    <div id="truck-recommendation" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/api/ai/recommend</span>
+                            <span class="badge badge-auth">Requires Auth</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Get AI truck recommendations</h5>
+                            <p>Get AI-powered truck recommendations based on user query.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ai-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ai-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="ai-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>query <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's query describing their cargo needs</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "query": "I need to transport 1000kg of goods from Jakarta to Bali"
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="ai-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "recommendation": "Based on your need to transport 1000kg of goods from Jakarta to Bali, I recommend using a box truck. Box trucks typically have a capacity between 1000-3000kg, which is perfect for your cargo weight. This option provides good protection for your goods during the long journey and is cost-effective for this weight range. The estimated cost would be between Rp2,000,000 - Rp3,500,000 depending on the exact dimensions of your cargo.",
+  "posts": [
+    {
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "departureDate": "2025-05-15",
+      "origin": "Jakarta",
+      "destination": "Bali",
+      "truckType": "box",
+      "maxWeight": 1500,
+      "phoneNumber": "08123456789",
+      "price": 2500000,
+      "imageUrl": "https://cloudinary.com/image.jpg",
+      "mapEmbedUrl": "https://maps.example.com/embed/123",
+      "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+      "createdAt": "2025-05-01T12:00:00.000Z",
+      "updatedAt": "2025-05-01T12:00:00.000Z"
+    },
+    // More matching posts...
+  ]
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="cargo-recommendation" class="endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/cargo/recommend</span>
+                        </div>
+                        <div class="endpoint-body">
+                            <h5>Get cargo recommendations</h5>
+                            <p>Get recommendations for cargo transportation based on specific filters.</p>
+
+                            <ul class="nav nav-tabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#cargo-params" type="button">Parameters</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cargo-response" type="button">Response</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane fade show active" id="cargo-params">
+                                    <table class="table param-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Parameter</th>
+                                                <th>Type</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>query <span class="required-badge">Required</span></td>
+                                                <td>String</td>
+                                                <td>User's query describing their cargo needs</td>
+                                            </tr>
+                                            <tr>
+                                                <td>filters <span class="optional-badge">Optional</span></td>
+                                                <td>Object</td>
+                                                <td>Additional filters for the search</td>
+                                            </tr>
+                                            <tr>
+                                                <td>filters.weight <span class="optional-badge">Optional</span></td>
+                                                <td>Number</td>
+                                                <td>Minimum weight capacity required in kg</td>
+                                            </tr>
+                                            <tr>
+                                                <td>filters.truckType <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Type of truck required</td>
+                                            </tr>
+                                            <tr>
+                                                <td>filters.origin <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Origin location</td>
+                                            </tr>
+                                            <tr>
+                                                <td>filters.destination <span class="optional-badge">Optional</span></td>
+                                                <td>String</td>
+                                                <td>Destination location</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <p>Example request:</p>
+                                    <pre><code>{
+  "query": "I need a refrigerated truck from Jakarta to Surabaya",
+  "filters": {
+    "weight": 2000,
+    "truckType": "refrigerated",
+    "origin": "Jakarta",
+    "destination": "Surabaya"
+  }
+}</code></pre>
+                                </div>
+                                <div class="tab-pane fade" id="cargo-response">
+                                    <h6>Successful response (200 OK):</h6>
+                                    <pre><code>{
+  "recommendation": "For your requirement of transporting refrigerated goods from Jakarta to Surabaya with a weight of 2000kg, I recommend the service provided by ID: 12345. This refrigerated truck has a capacity of 3000kg, which comfortably accommodates your 2000kg load with room to spare. The price of Rp3,500,000 is reasonable for a refrigerated transport on this route. The service also has a high rating, indicating reliability and customer satisfaction.",
+  "posts": [
+    {
+      "id": "12345",
+      "departureDate": "2025-05-20",
+      "origin": "Jakarta",
+      "destination": "Surabaya",
+      "truckType": "refrigerated",
+      "maxWeight": 3000,
+      "phoneNumber": "08123456789",
+      "price": 3500000,
+      "imageUrl": "https://cloudinary.com/refrigerated-truck.jpg",
+      "mapEmbedUrl": "https://maps.example.com/embed/456",
+      "driverId": "d1e2f3g4-h5i6-7890-1234-567890abcdef",
+      "createdAt": "2025-05-01T12:00:00.000Z",
+      "updatedAt": "2025-05-01T12:00:00.000Z"
+    },
+    // More matching posts...
+  ]
+}</code></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize syntax highlighting
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+
+            // Active link highlighting
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            // Handle section visibility based on URL hash
+            function handleHashChange() {
+                const hash = window.location.hash || '#overview';
+                const targetLink = document.querySelector(`.sidebar .nav-link[href="${hash}"]`);
+                if (targetLink) {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    targetLink.classList.add('active');
+                }
+            }
+
+            window.addEventListener('hashchange', handleHashChange);
+            handleHashChange(); // Run on initial load
+        });
+    </script>
+</body>
+</html>

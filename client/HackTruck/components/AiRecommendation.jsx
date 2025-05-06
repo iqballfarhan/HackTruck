@@ -1,12 +1,45 @@
 import React, { useState } from "react";
 import axios from "axios";
 import PostCard from "./PostCard";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchPosts } from "../store/slices/postSlice";
 
 const AiRecommendation = () => {
   const [input, setInput] = useState("");
   const [recommendation, setRecommendation] = useState("");
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [extractedFilters, setExtractedFilters] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Function to extract key information from user input
+  const extractFiltersFromInput = (input) => {
+    // Extract weight
+    const weightMatch = input.match(/(\d+)\s*(?:kg|kilo|kilogram|ton)/i);
+    const weight = weightMatch ? parseInt(weightMatch[1]) : null;
+    
+    // Extract origin
+    const originMatch = input.match(/dari\s+([A-Za-z\s]+?)(?:\s+ke|\s+menuju|\s*$)/i);
+    const origin = originMatch ? originMatch[1].trim() : null;
+    
+    // Extract destination
+    const destMatch = input.match(/ke\s+([A-Za-z\s]+)(?:\s*,|\s*$)/i);
+    const destination = destMatch ? destMatch[1].trim() : null;
+    
+    // Extract truck type
+    const truckTypeMatch = input.match(/(?:truk|truck)\s+([a-zA-Z]+)/i);
+    const truckType = truckTypeMatch ? truckTypeMatch[1].toLowerCase() : null;
+    
+    return { 
+      weight, 
+      origin, 
+      destination, 
+      truckType,
+      hasFilters: !!(weight || origin || destination || truckType)
+    };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,8 +47,16 @@ const AiRecommendation = () => {
     setRecommendation("Mencari rekomendasi...");
     setPosts([]);
     
+    // Extract filters from user input
+    const filters = extractFiltersFromInput(input);
+    setExtractedFilters(filters);
+    
     try {
-      const { data } = await axios.post("http://localhost:3000/cargo/recommend", { query: input });
+      const { data } = await axios.post("http://localhost:3000/cargo/recommend", { 
+        query: input,
+        filters: filters // Send extracted filters to backend
+      });
+      
       setRecommendation(data.recommendation || "Tidak ada rekomendasi tersedia.");
       setPosts(Array.isArray(data.posts) ? data.posts : []);
       setIsLoading(false);
@@ -25,6 +66,23 @@ const AiRecommendation = () => {
       setPosts([]);
       setIsLoading(false);
     }
+  };
+
+  // Apply filters to the main search page
+  const applyFiltersToSearch = () => {
+    if (!extractedFilters || !extractedFilters.hasFilters) return;
+    
+    const searchParams = {};
+    
+    if (extractedFilters.origin) searchParams.search = extractedFilters.origin;
+    if (extractedFilters.destination) searchParams.search = extractedFilters.destination;
+    if (extractedFilters.truckType) searchParams.truckType = extractedFilters.truckType;
+    
+    // Apply filters through Redux
+    dispatch(fetchPosts(searchParams));
+    
+    // Navigate to main search page
+    navigate('/?filtered=true');
   };
 
   return (
@@ -58,7 +116,7 @@ const AiRecommendation = () => {
                         className="form-control form-control-lg"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        placeholder="Contoh: Kirim barang dari Jakarta ke Surabaya, 1000kg, truk box"
+                        placeholder="Contoh: Kirim barang dari Jakarta ke Surabaya, 10000kg, truk box"
                         required
                       />
                     </div>
@@ -104,6 +162,48 @@ const AiRecommendation = () => {
                     <div className="p-3 bg-light rounded-3 border-start border-4 border-warning">
                       <p className="mb-0 fs-5">{recommendation}</p>
                     </div>
+                    
+                    {extractedFilters && extractedFilters.hasFilters && (
+                      <div className="mt-4">
+                        <h6 className="fw-bold mb-3">Parameter Yang Terdeteksi:</h6>
+                        <div className="d-flex flex-wrap gap-2">
+                          {extractedFilters.origin && (
+                            <span className="badge bg-primary rounded-pill p-2">
+                              <i className="bi bi-geo-alt me-1"></i>
+                              Asal: {extractedFilters.origin}
+                            </span>
+                          )}
+                          {extractedFilters.destination && (
+                            <span className="badge bg-primary rounded-pill p-2">
+                              <i className="bi bi-geo me-1"></i>
+                              Tujuan: {extractedFilters.destination}
+                            </span>
+                          )}
+                          {extractedFilters.weight && (
+                            <span className="badge bg-success rounded-pill p-2">
+                              <i className="bi bi-truck me-1"></i>
+                              Berat: ≥{extractedFilters.weight} kg
+                            </span>
+                          )}
+                          {extractedFilters.truckType && (
+                            <span className="badge bg-info rounded-pill p-2">
+                              <i className="bi bi-box me-1"></i>
+                              Tipe Truk: {extractedFilters.truckType}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="mt-3">
+                          <button 
+                            onClick={applyFiltersToSearch}
+                            className="btn btn-outline-primary btn-sm"
+                          >
+                            <i className="bi bi-funnel me-1"></i>
+                            Terapkan Filter ke Pencarian Utama
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -115,7 +215,11 @@ const AiRecommendation = () => {
           <div className="mt-5">
             <div className="text-center mb-4">
               <h3 className="fw-bold mb-2">Rekomendasi Cargo</h3>
-              <p className="text-muted">Pilihan truck terbaik untuk kebutuhan Anda</p>
+              <p className="text-muted">
+                {extractedFilters && extractedFilters.weight ? 
+                  `Truck dengan kapasitas ≥ ${extractedFilters.weight} kg` : 
+                  'Pilihan truck terbaik untuk kebutuhan Anda'}
+              </p>
             </div>
             <div className="row">
               {posts.map((post) => (

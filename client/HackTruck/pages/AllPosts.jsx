@@ -38,6 +38,10 @@ const AllPosts = () => {
   return (
     <div className="container-fluid p-0" style={{ width: '100%', maxWidth: '100%', overflowX: 'hidden' }}>
       <div className="container py-4">
+        
+        {/* AI Recommendation Section */}
+        <AiRecommendation />
+
         {/* Search and Filter Section */}
         <div className="card shadow border-0 rounded-lg mb-5">
           <div className="card-header bg-white py-4">
@@ -103,9 +107,6 @@ const AllPosts = () => {
             </div>
           </div>
         </div>
-
-        {/* AI Recommendation Section */}
-        <AiRecommendation />
 
         {/* Results Section */}
         <div className="d-flex justify-content-between align-items-center mb-4">

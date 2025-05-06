@@ -87,46 +87,32 @@ const AiRecommendation = () => {
   };
 
   return (
-    <div className="container py-5">
-      <div className="row justify-content-center mb-5">
-        <div className="col-lg-10">
-          <div className="text-center mb-4">
-            <h2 className="fw-bold mb-2">AI Cargo Assistant</h2>
-            <p className="text-muted">Dapatkan rekomendasi cargo terbaik sesuai kebutuhan Anda</p>
-          </div>
-          
-          <div className="card shadow-sm mb-4">
-            <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">
-                <i className="bi bi-robot me-2"></i>
-                Apa kebutuhan pengiriman Anda?
-              </h5>
-            </div>
-            <div className="card-body p-4">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="aiQuery" className="form-label fw-semibold">Deskripsi Kebutuhan</label>
-                  <div className="input-group">
-                    <span className="input-group-text">
-                      <i className="bi bi-chat-dots"></i>
-                    </span>
-                    <input
-                      id="aiQuery"
-                      type="text"
-                      className="form-control form-control-lg"
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Contoh: Kirim barang dari Jakarta ke Surabaya, 10000kg, truk box"
-                      required
-                    />
-                  </div>
-                  <div className="form-text mt-2">
-                    <i className="bi bi-info-circle me-1"></i>
-                    Jelaskan kebutuhan pengiriman Anda dengan detail (asal, tujuan, berat, jenis truk)
-                  </div>
-                </div>
-                
-                <div className="d-grid mt-4">
+    <div className="card shadow border-0 rounded-lg mb-5">
+      <div className="card-header bg-white d-flex align-items-center py-3">
+        <i className="bi bi-robot me-2 text-primary"></i>
+        <h3 className="mb-0">AI Cargo Assistant</h3>
+      </div>
+      <div className="card-body">
+        <div className="row">
+          <div className="col-lg-8 col-md-10 mx-auto">
+            <p className="text-muted text-center mb-4">Jelaskan kebutuhan pengiriman Anda dan AI akan memberikan rekomendasi terbaik</p>
+            
+            <form onSubmit={handleSubmit} className="mb-4">
+              <div className="mb-3">
+                <label htmlFor="aiQueryInput" className="form-label">Deskripsi Kebutuhan</label>
+                <div className="input-group">
+                  <span className="input-group-text">
+                    <i className="bi bi-chat-text"></i>
+                  </span>
+                  <input
+                    id="aiQueryInput"
+                    type="text"
+                    className="form-control"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Contoh: Kirim barang dari Jakarta ke Surabaya, 10000kg, truk box"
+                    required
+                  />
                   <button 
                     type="submit" 
                     className="btn btn-primary"
@@ -135,58 +121,57 @@ const AiRecommendation = () => {
                     {isLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Mencari Rekomendasi...
+                        Mencari...
                       </>
                     ) : (
-                      <>
-                        <i className="bi bi-search me-2"></i>
-                        Cari Rekomendasi
-                      </>
+                      <><i className="bi bi-search me-1"></i>Cari</>
                     )}
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-          
-          {recommendation && !isLoading && (
-            <div className="card shadow-sm mb-4 recommendation-card">
-              <div className="card-header">
-                <h5 className="mb-0">
-                  <i className="bi bi-lightbulb-fill me-2 text-warning"></i>
-                  Rekomendasi AI
-                </h5>
+                <div className="form-text">
+                  <i className="bi bi-info-circle me-1"></i>
+                  Semakin detail informasi yang diberikan, semakin akurat rekomendasi yang dihasilkan
+                </div>
               </div>
-              <div className="card-body p-4">
-                <div className="card-text">
-                  <div className="p-3 bg-light rounded-3 border-start border-4 border-warning">
-                    <p className="mb-0">{recommendation}</p>
+            </form>
+            
+            {recommendation && !isLoading && (
+              <div className="card border mb-4">
+                <div className="card-header bg-light">
+                  <div className="d-flex align-items-center">
+                    <i className="bi bi-lightbulb-fill text-warning me-2"></i>
+                    <h5 className="mb-0">Rekomendasi AI</h5>
+                  </div>
+                </div>
+                <div className="card-body">
+                  <div className="mb-3 border-start border-4 border-primary ps-3 py-2">
+                    {recommendation}
                   </div>
                   
                   {extractedFilters && extractedFilters.hasFilters && (
-                    <div className="mt-4">
-                      <h6 className="fw-bold mb-3">Parameter Yang Terdeteksi:</h6>
+                    <div className="mt-3">
+                      <h6 className="mb-2">Parameter yang Terdeteksi:</h6>
                       <div className="d-flex flex-wrap gap-2 mb-3">
                         {extractedFilters.origin && (
-                          <span className="badge bg-primary rounded-pill p-2">
+                          <span className="badge bg-primary rounded-pill">
                             <i className="bi bi-geo-alt me-1"></i>
                             Asal: {extractedFilters.origin}
                           </span>
                         )}
                         {extractedFilters.destination && (
-                          <span className="badge bg-primary rounded-pill p-2">
+                          <span className="badge bg-primary rounded-pill">
                             <i className="bi bi-geo me-1"></i>
                             Tujuan: {extractedFilters.destination}
                           </span>
                         )}
                         {extractedFilters.weight && (
-                          <span className="badge bg-success rounded-pill p-2">
+                          <span className="badge bg-success rounded-pill">
                             <i className="bi bi-truck me-1"></i>
                             Berat: ≥{extractedFilters.weight} kg
                           </span>
                         )}
                         {extractedFilters.truckType && (
-                          <span className="badge bg-info rounded-pill p-2">
+                          <span className="badge bg-info rounded-pill">
                             <i className="bi bi-box me-1"></i>
                             Tipe Truk: {extractedFilters.truckType}
                           </span>
@@ -195,52 +180,31 @@ const AiRecommendation = () => {
                       
                       <button 
                         onClick={applyFiltersToSearch}
-                        className="btn btn-outline-primary"
+                        className="btn btn-sm btn-outline-primary"
                       >
                         <i className="bi bi-funnel me-1"></i>
-                        Terapkan Filter ke Pencarian Utama
+                        Terapkan Filter ke Pencarian
                       </button>
                     </div>
                   )}
                 </div>
               </div>
-            </div>
-          )}
-      
-          {Array.isArray(posts) && posts.length > 0 && (
-            <div className="mt-4">
-              <h4 className="fw-bold mb-4 pb-2 border-bottom">Rekomendasi Cargo</h4>
-              <p className="text-muted mb-4">
-                {extractedFilters && extractedFilters.weight ? 
-                  `Truck dengan kapasitas minimum ${extractedFilters.weight} kg` : 
-                  'Pilihan truck terbaik untuk kebutuhan Anda'}
-              </p>
-              <div className="row">
-                {posts.map((post) => (
-                  <div key={post.id || Math.random()} className="col-md-6 col-lg-4 mb-4">
-                    <PostCard post={post} showControls={false} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {recommendation && !isLoading && posts.length === 0 && (
-            <div className="text-center mt-4">
-              <div className="card shadow-sm p-4">
-                <div className="py-3">
-                  <i className="bi bi-inbox fs-1 text-secondary mb-3 d-block"></i>
-                  <h5 className="fw-bold">Tidak Ada Cargo yang Sesuai</h5>
-                  <p className="text-muted mb-0">
-                    Tidak ditemukan cargo yang sesuai dengan kriteria Anda.
-                    <br />
-                    Coba ubah permintaan atau gunakan kata kunci yang berbeda.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+        
+        {Array.isArray(posts) && posts.length > 0 && (
+          <div className="mt-4">
+            <h5 className="border-bottom pb-2 mb-3">Truk yang Direkomendasikan</h5>
+            <div className="row">
+              {posts.map((post) => (
+                <div key={post.id || Math.random()} className="col-lg-4 col-md-6 mb-4">
+                  <PostCard post={post} showControls={false} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

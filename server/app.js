@@ -17,15 +17,15 @@ const corsOptions = {
   origin: [
     "http://localhost:5173",
     "http://localhost:4173",
-    "https://hacktruck-8c735.web.app", // tambahkan domain frontend
+    "https://hacktruck-8c735.web.app", // Tambahkan domain frontend
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  optionsSuccessStatus: 200, // untuk menghindari masalah 204
+  optionsSuccessStatus: 200, // Untuk menghindari masalah 204
 };
 
-// ✅ Gunakan CORS dan preflight
+// ✅ Gunakan CORS dan preflight untuk menangani request dengan metode OPTIONS
 app.use(cors(corsOptions));
 app.options("*", cors(corsOptions)); // Tangani preflight OPTIONS
 
@@ -60,6 +60,8 @@ sequelize
   })
   .catch((error) => {
     console.error("❌ Unable to connect to the database:", error);
+    // Optionally, close the server if database connection fails
+    process.exit(1); // Exit the process to indicate failure
   });
 
 module.exports = app;

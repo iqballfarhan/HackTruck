@@ -14,8 +14,20 @@ const errorHandler = require("./middleware/errorMiddleware");
 
 const app = express();
 
-// CORS configuration - Allow all origins
-app.use(cors()); // This allows all origins, methods, and headers without restrictions
+// CORS configuration
+const corsOptions = {
+  origin: [
+    "https://hacktruck-8c735.web.app",
+    "https://hacktruck-b0e4d.web.app",
+    "http://localhost:5173",
+    "http://localhost:4173",
+  ], // Explicitly list allowed origins
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Allowed HTTP methods
+  allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
